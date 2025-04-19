@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('pageTitle', 'Terrenos')
+
 @section('content')
 <div class="container">
     <h2 class="mb-4">Registro de Terrenos</h2>
@@ -10,9 +12,11 @@
     @endif
 
     {{-- Formulario --}}
-    <form action="{{ route('terrenos.store') }}" method="POST" enctype="multipart/form-data" class="mb-5">
+    <form id="terrenoForm" action="{{ route('terrenos.store') }}" method="POST" enctype="multipart/form-data" class="mb-5">
         @csrf
-        <input type="hidden" name="id" id="idTerreno">
+        
+        <input type="hidden" name="_method" value="POST" id="formMethod">
+        <input type="hidden" name="idTerreno" id="idTerreno">
         <div class="row g-3">
             <div class="col-md-3">
                 <label for="fechaInscripcion" class="form-label">Fecha de creación</label>
@@ -54,9 +58,6 @@
                 <label for="provincia" class="form-label">Provincia</label>
                 <select id="provincia" class="form-select">
                     <option value="">Seleccionar</option>
-                    <!--@foreach($provincias as $provincia)
-                        <option value="{{ $provincia->id }}">{{ $provincia->name }}</option>
-                    @endforeach-->
                 </select>
             </div>
 
@@ -68,8 +69,8 @@
             </div>
 
             <div class="col-md-3">
-                <label for="corregimiento" class="form-label">Corregimiento</label>
-                <select id="corregimiento" class="form-select">
+                <label for="idCorregimiento" class="form-label">Corregimiento</label>
+                <select id="idCorregimiento" class="form-select">
                     <option value="">Seleccionar</option>
                 </select>
             </div>
@@ -99,8 +100,59 @@
             </div>
 
             <div class="col-md-12 text-end">
+                <button type="button" class="btn btn-secondary" id="cancelarEdicionTerreno" style="display:none;">Cancelar</button>
+            </div>
+
+            <div class="col-md-12 text-end">
                 <button type="submit" class="btn btn-primary">Guardar Terreno</button>
             </div>
+        </div>
+    </form>
+
+    {{-- Formulario para buscar --}}
+    <form method="GET" action="{{ route('terrenos.index') }}" class="mb-4">
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <input type="text" name="tituloFinca" placeholder="Título de Finca" value="{{ request('tituloFinca') }}">
+            <input type="text" name="codigoUbicacion" placeholder="Código de Ubicación" value="{{ request('codigoUbicacion') }}">
+
+            <input type="number" step="0.01" name="areaMin" placeholder="Área mínima" value="{{ request('areaMin') }}">
+            <input type="number" step="0.01" name="areaMax" placeholder="Área máxima" value="{{ request('areaMax') }}">
+
+            <input type="number" step="0.01" name="valorTerrenoMin" placeholder="Valor Terreno mínimo" value="{{ request('valorTerrenoMin') }}">
+            <input type="number" step="0.01" name="valorTerrenoMax" placeholder="Valor Terreno máximo" value="{{ request('valorTerrenoMax') }}">
+
+            <input type="number" step="0.01" name="valorMejoraMin" placeholder="Valor Mejora mínimo" value="{{ request('valorMejoraMin') }}">
+            <input type="number" step="0.01" name="valorMejoraMax" placeholder="Valor Mejora máximo" value="{{ request('valorMejoraMax') }}">
+
+            <input type="date" name="fechaInicio" value="{{ request('fechaInicio') }}">
+            <input type="date" name="fechaFin" value="{{ request('fechaFin') }}">
+
+            <select name="idTipoMejora">
+                <option value="">-- Tipo de Mejora --</option>
+                @foreach($tiposMejora as $tipo)
+                    <option value="{{ $tipo->id }}">{{ $tipo->name }}</option>
+                @endforeach
+            </select>
+
+            <select name="idProvincia" id="idProvincia">
+                <option value="">-- Provincia --</option>
+            </select>
+
+            <select name="idDistrito" id="idDistrito">
+                <option value="">-- Distrito --</option>
+            </select>
+
+            <select name="idCorregimiento" id="idCorregimientoBuscar">
+                <option value="">-- Corregimiento --</option>
+            </select>
+
+            <select name="idComunidad" id="idComunidad">
+                <option value="">-- Comunidad --</option>
+            </select>
+        </div>
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+            <a href="{{ route('terrenos.index') }}" class="btn btn-secondary">Limpiar</a>
         </div>
     </form>
 
@@ -134,7 +186,16 @@
                 <tr>
                     <td>{{ date_format($terreno->fechaInscripcion, 'd-m-Y') }}</td>
                     <td>{{ $terreno->tituloFinca }}</td>
-                    <td>{{ $terreno->comunidad->corregimiento->codigoUbicacion }}</td>
+                    <td>
+                        {{ $terreno->comunidad->corregimiento->codigoUbicacion }}
+                        </br>
+                        <button type="button"
+                            class="btn btn-primary btn-sm editar-btn editar-codigo-ubicacion"
+                            dataId = "{{ $terreno->comunidad->corregimiento->id }}"
+                            dataCodigoUbicacion = "{{ $terreno->comunidad->corregimiento->codigoUbicacion }}">
+                            Actualizar
+                        </button>
+                    </td>
                     <td>{{ $terreno->areaTerreno }} M<sup>2</sup></td>
                     <td>${{ number_format($terreno->valorTerreno,2) }}</td>
                     <td>${{ number_format($terreno->valorMejora, 2) }}</td>
@@ -145,7 +206,7 @@
                     <td>{{ $terreno->comunidad->corregimiento->distrito->provincia->name ?? 'N/A' }}</td>
                     <td>{{ $terreno->comunidad->corregimiento->distrito->name ?? 'N/A' }}</td>
                     <td>{{ $terreno->comunidad->corregimiento->name ?? 'N/A' }}</td>
-                    <td>{{ $terreno->Comunidad->name ?? 'N/A' }}</td>
+                    <td>{{ $terreno->comunidad->name ?? 'N/A' }}</td>
                     <td>
                         @if($terreno->zona)
                             <a href="{{ $terreno->zona}}" class="btn btn-sm btn-outline-primary" target="blank">Ver Mapa</a>
@@ -163,9 +224,9 @@
                     </td>
                     <td>
                         <button type="button" 
-                                class="btn btn-primary btn-sm editar-btn" 
+                                class="btn btn-primary btn-sm editar-btn editar-terreno" 
                                 dataId="{{ $terreno->id }}"
-                                dataFechaInscripcion="{{ $terreno->fechaInscripcion }}"
+                                dataFechaInscripcion="{{ date_format($terreno->fechaInscripcion, 'Y-m-d') }}"
                                 dataTituloFinca="{{ $terreno->tituloFinca }}"
                                 dataIdComunidad="{{ $terreno->idComunidad }}"
                                 dataIdTipoMejora="{{ $terreno->idTipoMejora }}"
@@ -189,248 +250,57 @@
             @endforelse
         </tbody>
     </table>
+
+    <div class="modal fade" id="addComunidadModal" tabindex="-1" aria-labelledby="addComunidadModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="addComunidadForm">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="addComunidadModalLabel">Agregar nueva comunidad</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                <input type="hidden" id="corregimiento_id_modal" name="corregimiento_id">
+                <div class="mb-3">
+                    <label for="comunidad_nombre" class="form-label">Nombre de la comunidad</label>
+                    <input type="text" class="form-control" id="comunidad_nombre" name="nombre" required>
+                </div>
+                </div>
+                <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addCodigoUbicacionModal" tabindex="-1" aria-labellledby="addCodigoUbicacionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="addCodigoUbicacionForm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addCodigoUbicacionLabel">Modificar el C&oacute;digo de Ubicaci&oacute;n</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="corregimiento-id-modal" name="corregimiento-id">
+                        <div class="mb-3">
+                            <label for="codigo_ubicacion" class="form-label">C&oacute;digo de Ubicaci&oacute;n</label>
+                            <input type="text" class="form-control" id="codigo_ubicacion" name="codigoUbicacion" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Actualizar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
 </div>
 
-<script>
-    /*document.getElementById('provincia').addEventListener('change', function () {
-        let provinciaId = this.value;
-        fetch(`/distritos/${provinciaId}`)
-            .then(res => res.json())
-            .then(data => {
-                let distritoSelect = document.getElementById('distrito');
-                distritoSelect.innerHTML = '<option value="">Seleccionar</option>';
-                data.forEach(d => {
-                    distritoSelect.innerHTML += `<option value="${d.id}">${d.name}</option>`;
-                });
-
-                document.getElementById('corregimiento').innerHTML = '<option value="">Seleccionar</option>';
-                document.getElementById('comunidad').innerHTML = '<option value="">Seleccionar</option>';
-            });
-    });*/
-
-    document.getElementById('distrito').addEventListener('change', function () {
-        let distritoId = this.value;
-        fetch(`/corregimientos/${distritoId}`)
-            .then(res => res.json())
-            .then(data => {
-                let corregimientoSelect = document.getElementById('corregimiento');
-                corregimientoSelect.innerHTML = '<option value="">Seleccionar</option>';
-                data.forEach(c => {
-                    corregimientoSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`;
-                });
-
-                document.getElementById('comunidad').innerHTML = '<option value="">Seleccionar</option>';
-            });
-    });
-
-    document.getElementById('corregimiento').addEventListener('change', function () {
-        let corregimientoId = this.value;
-        fetch(`/comunidades/${corregimientoId}`)
-            .then(res => res.json())
-            .then(data => {
-                let comunidadSelect = document.getElementById('comunidad');
-                comunidadSelect.innerHTML = '<option value="">Seleccionar</option>';
-                data.forEach(c => {
-                    comunidadSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`;
-                });
-            });
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-    fetch('/provincias')
-        .then(res => res.json())
-        .then(data => {
-            let provinciaSelect = document.getElementById('provincia');
-            data.forEach(p => {
-                provinciaSelect.innerHTML += `<option value="${p.id}">${p.name}</option>`;
-            });
-        });
-    });
-
-    document.getElementById('provincia').addEventListener('change', function () {
-        let provinciaId = this.value;  // Get selected provincia ID
-        if (provinciaId) {
-            // Fetch distritos for the selected provincia
-            fetch(`/distritos/${provinciaId}`)
-                .then(res => res.json())
-                .then(data => {
-                    let distritoSelect = document.getElementById('distrito');
-                    // Clear previous options and add the default one
-                    distritoSelect.innerHTML = '<option value="">Seleccionar</option>';
-                    data.forEach(d => {
-                        // Append each distrito as an option
-                        distritoSelect.innerHTML += `<option value="${d.id}">${d.name}</option>`;
-                    });
-
-                    // Clear the corregimiento and comunidad selects
-                    document.getElementById('corregimiento').innerHTML = '<option value="">Seleccionar</option>';
-                    document.getElementById('comunidad').innerHTML = '<option value="">Seleccionar</option>';
-                })
-                .catch(error => console.error('Error fetching distritos:', error));
-        } else {
-            // If no provincia is selected, clear the distrito select options
-            document.getElementById('distrito').innerHTML = '<option value="">Seleccionar</option>';
-        }
-    });
-
-    //HERE
-    document.getElementById('provincia').addEventListener('change', function () {
-        let provinciaId = this.value;  // Get selected provincia ID
-        if (provinciaId) {
-            // Fetch distritos for the selected provincia
-            fetch(`/distritos/${provinciaId}`)
-                .then(res => res.json())
-                .then(data => {
-                    let distritoSelect = document.getElementById('distrito');
-                    // Clear previous options and add the default one
-                    distritoSelect.innerHTML = '<option value="">Seleccionar</option>';
-                    data.forEach(d => {
-                        // Append each distrito as an option
-                        distritoSelect.innerHTML += `<option value="${d.id}">${d.name}</option>`;
-                    });
-
-                    // Clear the corregimiento and comunidad selects
-                    document.getElementById('corregimiento').innerHTML = '<option value="">Seleccionar</option>';
-                    document.getElementById('comunidad').innerHTML = '<option value="">Seleccionar</option>';
-                })
-                .catch(error => console.error('Error fetching distritos:', error));
-        } else {
-            // If no provincia is selected, clear the distrito, corregimiento, and comunidad select options
-            document.getElementById('distrito').innerHTML = '<option value="">Seleccionar</option>';
-            document.getElementById('corregimiento').innerHTML = '<option value="">Seleccionar</option>';
-            document.getElementById('comunidad').innerHTML = '<option value="">Seleccionar</option>';
-        }
-    });
-
-    document.getElementById('distrito').addEventListener('change', function () {
-        let distritoId = this.value;  // Get selected distrito ID
-        if (distritoId) {
-            // Fetch corregimientos for the selected distrito
-            fetch(`/corregimientos/${distritoId}`)
-                .then(res => res.json())
-                .then(data => {
-                    let corregimientoSelect = document.getElementById('corregimiento');
-                    // Clear previous options and add the default one
-                    corregimientoSelect.innerHTML = '<option value="">Seleccionar</option>';
-                    data.forEach(c => {
-                        // Append each corregimiento as an option
-                        corregimientoSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`;
-                    });
-
-                    // Clear the comunidad select
-                    document.getElementById('comunidad').innerHTML = '<option value="">Seleccionar</option>';
-                })
-                .catch(error => console.error('Error fetching corregimientos:', error));
-        } else {
-            // If no distrito is selected, clear the corregimiento and comunidad select options
-            document.getElementById('corregimiento').innerHTML = '<option value="">Seleccionar</option>';
-            document.getElementById('comunidad').innerHTML = '<option value="">Seleccionar</option>';
-        }
-    });
-
-    document.getElementById('corregimiento').addEventListener('change', function () {
-        let corregimientoId = this.value;  // Get selected corregimiento ID
-        if (corregimientoId) {
-            // Fetch comunidades for the selected corregimiento
-            fetch(`/comunidades/${corregimientoId}`)
-                .then(res => res.json())
-                .then(data => {
-                    let comunidadSelect = document.getElementById('comunidad');
-                    // Clear previous options and add the default one
-                    comunidadSelect.innerHTML = '<option value="">Seleccionar</option>';
-                    data.forEach(com => {
-                        // Append each comunidad as an option
-                        comunidadSelect.innerHTML += `<option value="${com.id}">${com.name}</option>`;
-                    });
-                })
-                .catch(error => console.error('Error fetching comunidades:', error));
-        } else {
-            // If no corregimiento is selected, clear the comunidad select options
-            document.getElementById('comunidad').innerHTML = '<option value="">Seleccionar</option>';
-        }
-    });    
-
-    //UPDATE
-    document.querySelectorAll('.editar-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            // Get data from button attributes
-            const id = this.getAttribute('dataId');
-            const fecha = this.getAttribute('dataFechaInscripcion');
-            const titulo = this.getAttribute('dataTituloFinca');
-            const idComunidad = this.getAttribute('dataIdComunidad');
-            const idTipoMejora = this.getAttribute('dataIdTipoMejora');
-            const valorTerreno = this.getAttribute('dataValorTerreno');
-            const areaTerreno = this.getAttribute('dataAreaTerreno');
-            const valorMejora = this.getAttribute('dataValorMejora');
-            const zona = this.getAttribute('dataZona');
-            const lote = this.getAttribute('dataLote');
-            const planoLote = this.getAttribute('dataPlanoLote');
-
-            // Set form values
-            document.getElementById('idTerreno').value = id;
-            document.getElementById('fechaInscripcion').value = fecha;
-            document.querySelector('[name="tituloFinca"]').value = titulo;
-            document.querySelector('[name="valorTerreno"]').value = valorTerreno;
-            document.querySelector('[name="areaTerreno"]').value = areaTerreno;
-            document.querySelector('[name="valorMejora"]').value = valorMejora;
-            document.querySelector('[name="zona"]').value = zona;
-            document.querySelector('[name="lote"]').value = lote;
-
-            // Selects: Comunidad y TipoMejora
-            document.querySelector('[name="idTipoMejora"]').value = idTipoMejora;
-
-            // Comunidad requires fetching provincia → distrito → corregimiento
-            // We'll handle this next 👇
-
-            // Simulate selecting Comunidad (load chain if necessary)
-            fetch(`/comunidad-info/${idComunidad}`)
-                .then(res => res.json())
-                .then(data => {
-                    const { provincia_id, distrito_id, corregimiento_id, comunidad_id } = data;
-
-                    // Set Provincia
-                    document.getElementById('provincia').value = provincia_id;
-
-                    // Load distritos
-                    return fetch(`/distritos/${provincia_id}`)
-                        .then(res => res.json())
-                        .then(distritos => {
-                            const distritoSelect = document.getElementById('distrito');
-                            distritoSelect.innerHTML = '<option value="">Seleccionar</option>';
-                            distritos.forEach(d => {
-                                distritoSelect.innerHTML += `<option value="${d.id}" ${d.id == distrito_id ? 'selected' : ''}>${d.name}</option>`;
-                            });
-
-                            // Load corregimientos
-                            return fetch(`/corregimientos/${distrito_id}`);
-                        })
-                        .then(res => res.json())
-                        .then(corregimientos => {
-                            const corregimientoSelect = document.getElementById('corregimiento');
-                            corregimientoSelect.innerHTML = '<option value="">Seleccionar</option>';
-                            corregimientos.forEach(c => {
-                                corregimientoSelect.innerHTML += `<option value="${c.id}" ${c.id == corregimiento_id ? 'selected' : ''}>${c.name}</option>`;
-                            });
-
-                            // Load comunidades
-                            return fetch(`/comunidades/${corregimiento_id}`);
-                        })
-                        .then(res => res.json())
-                        .then(comunidades => {
-                            const comunidadSelect = document.getElementById('comunidad');
-                            comunidadSelect.innerHTML = '<option value="">Seleccionar</option>';
-                            comunidades.forEach(c => {
-                                comunidadSelect.innerHTML += `<option value="${c.id}" ${c.id == comunidad_id ? 'selected' : ''}>${c.name}</option>`;
-                            });
-                        });
-                })
-                .catch(error => {
-                    console.error('Error cargando comunidad y ubicación:', error);
-                });
-
-            // Opcional: desplazarse al formulario
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-    });
-</script>
+@vite('resources/js/app.js')
+@vite('resources/js/terrenos.js')
 @endsection
