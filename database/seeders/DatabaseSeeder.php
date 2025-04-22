@@ -25,5 +25,6 @@ class DatabaseSeeder extends Seeder
         $this->call([CorregimientoSeeder::class]);
         $this->call([TipoMejoraSeeder::class]);
         $this->call([RoleSeeder::class]);
+        $this->call([InvitacionSeeder::class]);
     }
 }
