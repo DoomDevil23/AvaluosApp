@@ -1,4 +1,7 @@
 import './bootstrap';
-import './selects.js';
-//import './terrenos.js';
-//import './comunidades.js';
+
+import Alpine from 'alpinejs';
+
+window.Alpine = Alpine;
+
+Alpine.start();

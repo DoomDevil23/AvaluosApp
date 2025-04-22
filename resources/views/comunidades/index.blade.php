@@ -1,128 +1,171 @@
-@extends('layouts.app')
+{{-- @extends('layouts.app')
 
 @section('pageTitle', 'Comunidades')
 
-@section('content')
-<div class="container">
-    <h2 class="mb-4">Registro de Comunidades</h2>
-
-    {{-- Mensajes de éxito --}}
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-
-    {{-- Formulario --}}
-    <form id="comunidadForm" action="{{ route('comunidades.store') }}" method="POST" enctype="multipart/form-data" class="mb-5">
-        @csrf
-        
-        <input type="hidden" name="_method" value="POST" id="formMethod">
-        <input type="hidden" name="idComunidad" id="idComunidad">
-        <div class="row g-3">
-
-            <div class="col-md-6">
-                <label for="name" class="form-label">Nombre</label>
-                <input type="text" name="name" class="form-control" required>
+@section('content') --}}
+<x-app-layout header="Comunidades - Avaluos App">
+    <div class="container">
+    
+        {{-- Mensajes de éxito --}}
+        @if(session('success'))
+            <div class="alert-success">
+                {{ session('success') }}
             </div>
+        @endif
+    
+        <x-slot name="header">
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                {{ __('Comunidades') }}
+            </h2>
+        </x-slot>
+        {{-- Formulario --}}
+        <div class="container mx-auto p-4 max-w-screen-80">
+            
+            
+            {{-- Formulario --}}
+            <div class="grid grid-cols-1 gap-4">
+                @if(in_array(auth()->user()->idRole, [2, 3]))
+                    <form id="comunidadForm" action="{{ route('comunidades.store') }}" method="POST" enctype="multipart/form-data" class="mb-5">
+                        @csrf
+                        
+                        <input type="hidden" name="_method" value="POST" id="formMethod">
+                        <input type="hidden" name="idComunidad" id="idComunidad">
 
-            <!--HERE-->
-            <div class="col-md-3">
-                <label for="provincia" class="form-label">Provincia</label>
-                <select id="provincia" class="form-select">
-                    <option value="">Seleccionar</option>
-                </select>
-            </div>
+                        {{-- Adjusted Grid Layout --}}
+                        <div class="form-element"> 
+                            {{-- Input: Nombre --}}
+                            <x-input-box
+                                name="name"
+                                label="Nombre"
+                                type="text"
+                                required="true"
+                            />
 
-            <div class="col-md-3">
-                <label for="distrito" class="form-label">Distrito</label>
-                <select id="distrito" class="form-select">
-                    <option value="">Seleccionar</option>
-                </select>
-            </div>
+                            {{-- Input: Provincia --}}
+                            <x-select 
+                                id="provincia" 
+                                name="provincia" 
+                                label="Provincia"  
+                                placeholder="Seleccionar"
+                            />
 
-            <div class="col-md-3">
-                <label for="idCorregimiento" class="form-label">Corregimiento</label>
-                <select id="idCorregimiento" name="idCorregimiento" class="form-select">
-                    <option value="">Seleccionar</option>
-                </select>
-            </div>
+                            {{-- Input: Distrito --}}
+                            <x-select
+                                id="distrito"
+                                name="distrito"
+                                label="Distrito"
+                                placeholder="Seleccionar"
+                            />
 
-            <!--HERE-->
+                            {{-- Input: Corregimiento --}}
+                            <x-select
+                                id="idCorregimiento"
+                                name="idCorregimiento"
+                                label="Corregimiento"
+                                placeholder="Seleccionar"
+                            />
+                        </div>
 
-            <div class="col-md-12 text-end">
-                <button type="button" class="btn btn-secondary" id="cancelarEdicionComunidad" style="display:none;">Cancelar</button>
-            </div>
-
-            <div class="col-md-12 text-end">
-                <button type="submit" class="btn btn-primary">Guardar Comunidad</button>
+                        {{-- Buttons --}}
+                        <div class="btn-wrapper">
+                            <!--<button type="button" class="hidden btn-secondary text-black bg-gray-200 px-4 py-2 rounded-md hover:bg-gray-300" id="cancelarEdicionComunidad">Cancelar</button>-->
+                            <x-btn-cancelar
+                                id="cancelarEdicionComunidad"
+                            />
+                            <!--<button type="submit" class="btn-primary">Guardar</button>-->
+                            <x-btn-guardar-actualizar />
+                        </div>
+                    </form>
+                @endif
             </div>
         </div>
-    </form>
+    
+        <hr>
+        {{-- Formulario para buscar --}}
+        <h4>Buscar</h4>
+        <form method="GET" action="{{ route('comunidades.index') }}" class="mb-4">
+            <div class="buscar-form-element">
+                <x-input-box-buscar
+                    id="nameBuscar"
+                    name="name"
+                    placeholder="Nombre de la Comunidad"
+                    type="text"
+                    value="{{ request('name') ?? null }}"
+                />
 
-    {{-- Formulario para buscar --}}
-    <form method="GET" action="{{ route('comunidades.index') }}" class="mb-4">
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <input type="text" name="name" placeholder="Nombre de la Comunidad" value="{{ request('nombreComunidad') }}">
-
-            <select name="idProvincia" id="idProvincia">
-                <option value="">-- Provincia --</option>
-            </select>
-
-            <select name="idDistrito" id="idDistrito">
-                <option value="">-- Distrito --</option>
-            </select>
-
-            <select name="idCorregimiento" id="idCorregimientoBuscar">
-                <option value="">-- Corregimiento --</option>
-            </select>
-
+                <x-select-buscar
+                    id="idProvincia"
+                    name="idProvincia"
+                    label=""
+                    placeholder="Provincia"
+                    idSelected="{{ request('idProvincia') }}"
+                />
+    
+                <x-select-buscar
+                    id="idDistrito"
+                    name="idDistrito"
+                    label=""
+                    placeholder="Distrito"
+                    isSelected="{{ request('idDistrito') }}"
+                />
+    
+                <x-select-buscar
+                    id="idCorregimientoBuscar"
+                    name="idCorregimiento"
+                    label=""
+                    placeholder="Corregimiento"
+                    isSelected="idCorregimiento"
+                />
+            </div>
+            <x-search-controls 
+                clearRoute="{{ route('comunidades.index') }}" 
+            />
+        </form>
+    
+        {{-- Tabla de comunidades --}}
+        <div class="table-wrapper">
+            <h4>Comunidades Registradas</h4>
+            <div class="mt-4">
+                {{ $comunidades->links() }}
+            </div>
+            <table class="registers-table" id="registersTable">
+                <thead class="rth-table">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Provincia</th>
+                        <th>Distrito</th>
+                        <th>Corregimiento</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="rtb-table">
+                    @forelse($comunidades as $comunidad)
+                        <tr>
+                            <td>{{ $comunidad->name }}</td>
+                            <td>{{ $comunidad->corregimiento->distrito->provincia->name ?? 'N/A' }}</td>
+                            <td>{{ $comunidad->corregimiento->distrito->name ?? 'N/A' }}</td>
+                            <td>{{ $comunidad->corregimiento->name ?? 'N/A' }}</td>
+                            @if(in_array(auth()->user()->idRole, [2, 3]))
+                                <x-action-cell
+                                    class="editar-comunidad" 
+                                    :editData="['id' => $comunidad->id, 'name' => $comunidad->name, 'idCorregimiento' => $comunidad->idCorregimiento]" 
+                                    :deleteRoute="route('comunidades.destroy', $comunidad->id)" 
+                                />
+                            @else
+                                <td>Sin Permisos</td>
+                            @endif
+                        </tr>
+                    @empty
+                        <x-empty-row colspan="5" message="No hay comunidades registradas." />
+                    @endforelse
+                </tbody>
+            </table>
+            {{ $comunidades->links() }}
         </div>
-        <div class="mt-4">
-            <button type="submit" class="btn btn-primary">Filtrar</button>
-            <a href="{{ route('comunidades.index') }}" class="btn btn-secondary">Limpiar</a>
-        </div>
-    </form>
-
-    {{-- Tabla de comunidades --}}
-    <h4>Comunidades Registradas</h4>
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Provincia</th>
-                <th>Distrito</th>
-                <th>Corregimiento</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($comunidades as $comunidad)
-                <tr>
-                    <td>{{ $comunidad->name }}</td>
-                    <td>{{ $comunidad->corregimiento->distrito->provincia->name ?? 'N/A' }}</td>
-                    <td>{{ $comunidad->corregimiento->distrito->name ?? 'N/A' }}</td>
-                    <td>{{ $comunidad->corregimiento->name ?? 'N/A' }}</td>
-                    <td>
-                        <button type="button" 
-                                class="btn btn-primary btn-sm editar-btn editar-comunidad" 
-                                dataId="{{ $comunidad->id }}"
-                                dataNombreComunidad="{{ $comunidad->name }}"
-                                dataIdCorregimiento="{{ $comunidad->idCorregimiento }}">
-                            Editar
-                        </button>
-                        <form action="{{ route('comunidades.destroy', $comunidad->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro?')">
-                            @csrf
-                            @method('DELETE')
-                            <button class="btn btn-danger btn-sm">Eliminar</button>
-                            
-                        </form>
-                    </td>
-                </tr>
-            @empty
-                <tr><td colspan="11">No hay comunidades registrados.</td></tr>
-            @endforelse
-        </tbody>
-    </table>
-</div>
-@vite('resources/js/app.js')
-@vite('resources/js/comunidades.js')
-@endsection
+    </div>
+    @vite('resources/js/app.js')
+    @vite('resources/js/selects.js')
+    @vite('resources/js/comunidades.js')
+    @vite('resources/js/table.js')
+</x-app-layout>
+{{--@endsection--}}

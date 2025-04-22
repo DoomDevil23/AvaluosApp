@@ -1,10 +1,12 @@
+//const { document } = require("postcss");
+
 //UPDATE
 document.querySelectorAll('.editar-comunidad').forEach(button => {
     button.addEventListener('click', function () {
         // Get data from button attributes
-        const id = this.getAttribute('dataId');
-        const nombreComunidad = this.getAttribute('dataNombreComunidad');
-        const idCorregimiento = this.getAttribute('dataIdCorregimiento');
+        const id = this.getAttribute('data-id');
+        const nombreComunidad = this.getAttribute('data-name');
+        const idCorregimiento = this.getAttribute('data-idcorregimiento');
 
         // Set form values
         document.getElementById('idComunidad').value = id;
@@ -57,7 +59,7 @@ document.querySelectorAll('.editar-comunidad').forEach(button => {
         console.log(document.getElementById('idComunidad').value);
         document.getElementById('formMethod').value = 'PUT';
 
-        document.querySelector('#comunidadForm button[type="submit"]').textContent = 'Actualizar Comunidad';
+        document.querySelector('#comunidadForm button[type="submit"]').textContent = 'Actualizar';
         document.getElementById('cancelarEdicionComunidad').style.display = 'inline-block';
     })
 });
@@ -69,7 +71,83 @@ document.getElementById('cancelarEdicionComunidad').addEventListener('click', fu
     document.getElementById('formMethod').value = 'POST';
     document.getElementById('idComunidad').value = '';
     this.style.display = 'none';
-    document.querySelector('#comunidadForm button[type="submit"]').textContent = 'Guardar Comunidad';
+    document.querySelector('#comunidadForm button[type="submit"]').textContent = 'Guardar';
     document.getElementById('distrito').innerHTML = '<option value="">Seleccionar</option>';
     document.getElementById('idCorregimiento').innerHTML = '<option value="">Seleccionar</option>';
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const params = new URLSearchParams(window.location.search);
+    
+    // Check if there are any query parameters before proceeding
+    if (!params.toString()) {
+        return; // Exit script if no filters are present
+    }
+
+    // Retrieve selected values if they exist
+    const selectedName = params.get('name');
+    const selectedProvincia = params.get('idProvincia');
+    const selectedDistrito = params.get('idDistrito');
+    const selectedCorregimiento = params.get('idCorregimiento');
+
+    if(selectedName){
+        document.getElementById('nameBuscar').value = selectedName;
+    }
+
+    // Populate the Provincia select
+    fetch('/provincias')
+        .then(res => res.json())
+        .then(provincias => {
+            const provinciaSelect = document.getElementById('idProvincia');
+            provinciaSelect.innerHTML = '<option value="">-- Provincia --</option>';
+
+            provincias.forEach(provincia => {
+                provinciaSelect.innerHTML += `
+                    <option value="${provincia.id}" ${provincia.id == selectedProvincia ? 'selected' : ''}>
+                        ${provincia.name}
+                    </option>`;
+            });
+
+            // Load distritos if Provincia is pre-selected
+            if (selectedProvincia) {
+                loadDistritos(selectedProvincia);
+            }
+        });
+
+    function loadDistritos(provinciaId) {
+        fetch(`/distritos/${provinciaId}`)
+            .then(res => res.json())
+            .then(distritos => {
+                const distritoSelect = document.getElementById('idDistrito');
+                distritoSelect.innerHTML = '<option value="">-- Distrito --</option>';
+
+                distritos.forEach(distrito => {
+                    distritoSelect.innerHTML += `
+                        <option value="${distrito.id}" ${distrito.id == selectedDistrito ? 'selected' : ''}>
+                            ${distrito.name}
+                        </option>`;
+                });
+
+                // Load corregimientos if Distrito is pre-selected
+                if (selectedDistrito) {
+                    loadCorregimientos(selectedDistrito);
+                }
+            });
+    }
+
+    function loadCorregimientos(distritoId) {
+        fetch(`/corregimientos/${distritoId}`)
+            .then(res => res.json())
+            .then(corregimientos => {
+                const corregimientoSelect = document.getElementById('idCorregimientoBuscar');
+                corregimientoSelect.innerHTML = '<option value="">-- Corregimiento --</option>';
+
+                corregimientos.forEach(corregimiento => {
+                    corregimientoSelect.innerHTML += `
+                        <option value="${corregimiento.id}" ${corregimiento.id == selectedCorregimiento ? 'selected' : ''}>
+                            ${corregimiento.name}
+                        </option>`;
+                });
+            });
+    }
 });

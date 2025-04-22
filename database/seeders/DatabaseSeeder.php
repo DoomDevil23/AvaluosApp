@@ -24,5 +24,6 @@ class DatabaseSeeder extends Seeder
         $this->call([DistritoSeeder::class]);
         $this->call([CorregimientoSeeder::class]);
         $this->call([TipoMejoraSeeder::class]);
+        $this->call([RoleSeeder::class]);
     }
 }

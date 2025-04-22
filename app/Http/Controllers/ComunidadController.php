@@ -39,7 +39,9 @@ class ComunidadController extends Controller
             $query->where('idCorregimiento', $request->idCorregimiento);
         }
 
-        $comunidades = $query->get();
+        //$comunidades = $query->get();
+        $comunidades = $query->orderBy('name', 'asc')
+        ->paginate(5);
         $provincias = Provincia::all();
 
         
@@ -58,8 +60,17 @@ class ComunidadController extends Controller
             'idCorregimiento'=>$request->idCorregimiento
         ]);
 
-        if($request->ajax())
+        if($request->ajax()){
             return response()->json($comunidad);
+            /*return response()->json([
+                'success' => true,
+                'data' => [
+                    'id' => $comunidad->id,
+                    'name' => $comunidad->name,
+                ],
+            ]);*/
+        
+        }
 
             return redirect()->route('comunidades.index')->with('success', 'Comunidad creada correctamente');
     }

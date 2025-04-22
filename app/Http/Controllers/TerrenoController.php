@@ -78,7 +78,8 @@ class TerrenoController extends Controller
         }
     
         //$terrenos = $query->orderBy('created_at', 'desc')->get();
-        $terrenos = $query->get();
+        $terrenos = $query->orderBy('created_at', 'desc')
+        ->paginate(5);
         //TO HERE
 
         $comunidades = Comunidad::all();

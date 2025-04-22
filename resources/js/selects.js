@@ -15,6 +15,28 @@ document.addEventListener('DOMContentLoaded', function () {
                 provinciaSelect.innerHTML += `<option value="${p.id}">${p.name}</option>`;
             });
         });
+
+        //TIPO MEJORA
+        if(document.getElementById('tipoMejora')){
+
+            fetch('/tipomejoras')
+            .then(res => res.json())
+            .then(data => {
+                let idTipoMejoraSelect = document.getElementById('tipoMejora');
+                data.forEach(p => {
+                    idTipoMejoraSelect.innerHTML += `<option value="${p.id}">${p.name}</option>`;
+                });
+            });
+
+            fetch('/tipomejoras')
+            .then(res => res.json())
+            .then(data => {
+                let idTipoMejoraSelect = document.getElementById('idTipoMejora');
+                data.forEach(p => {
+                    idTipoMejoraSelect.innerHTML += `<option value="${p.id}">${p.name}</option>`;
+                });
+            });
+        }
 });
 
 document.getElementById('provincia').addEventListener('change', function () {
@@ -33,15 +55,18 @@ document.getElementById('provincia').addEventListener('change', function () {
                 });
 
                 // Clear the corregimiento and comunidad selects
-                document.getElementById('corregimiento').innerHTML = '<option value="">Seleccionar</option>';
-                document.getElementById('comunidad').innerHTML = '<option value="">Seleccionar</option>';
+                if(document.getElementById('corregimniento'))
+                    document.getElementById('corregimiento').innerHTML = '<option value="">Seleccionar</option>';
+                if(document.getElementById('comunidad'))
+                    document.getElementById('comunidad').innerHTML = '<option value="">Seleccionar</option>';
             })
             .catch(error => console.error('Error fetching distritos:', error));
     } else {
         // If no provincia is selected, clear the distrito select options
         document.getElementById('distrito').innerHTML = '<option value="">Seleccionar</option>';
         document.getElementById('corregimiento').innerHTML = '<option value="">Seleccionar</option>';
-        document.getElementById('comunidad').innerHTML = '<option value="">Seleccionar</option>';
+        if(document.getElementById('comunidad'))
+            document.getElementById('comunidad').innerHTML = '<option value="">Seleccionar</option>';
     }
 });
 
@@ -62,23 +87,30 @@ if(document.getElementById('distrito')){
                     });
 
                     // Clear the comunidad select
-                    document.getElementById('comunidad').innerHTML = '<option value="">Seleccionar</option>';
+                    if(document.getElementById('comunidad'))
+                        document.getElementById('comunidad').innerHTML = '<option value="">Seleccionar</option>';
                 })
                 .catch(error => console.error('Error fetching corregimientos:', error));
         } else {
             // If no distrito is selected, clear the corregimiento and comunidad select options
             document.getElementById('corregimiento').innerHTML = '<option value="">Seleccionar</option>';
-            document.getElementById('comunidad').innerHTML = '<option value="">Seleccionar</option>';
+            if(document.getElementById('comunidad'))
+                document.getElementById('comunidad').innerHTML = '<option value="">Seleccionar</option>';
         }
     });
 }
 
-if(document.getElementById('idCorregimiento')){
+if(document.getElementById('idCorregimiento') && document.getElementById('comunidad')){
     document.getElementById('idCorregimiento').addEventListener('change', function () {
         let corregimientoId = this.value;  // Get selected corregimiento ID
         if (corregimientoId) {
             // Fetch comunidades for the selected corregimiento
-            fetch(`/comunidades/${corregimientoId}`)
+            fetch(`/comunidades/${corregimientoId}`,{
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
                 .then(res => res.json())
                 .then(data => {
                     let comunidadSelect = document.getElementById('comunidad');
@@ -111,7 +143,6 @@ if(document.getElementById('comunidad')){
                 alert("Seleccione un corregimiento primero.");
             }
             this.value = ''; // Reset to default
-            console.log('hola'+corregimientoId);
         }
     });
 }
@@ -155,7 +186,12 @@ document.getElementById('idDistrito').addEventListener('change', function(){
 if(document.getElementById('idCorregimientoBuscar')){
     document.getElementById('idCorregimientoBuscar').addEventListener('change', function () {
         const corregimientoId = this.value;
-        fetch(`/comunidades/${corregimientoId}`)
+        fetch(`/comunidades/${corregimientoId}`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest' // This tells Laravel it's an AJAX request
+            }
+        })
             .then(response => response.json())
             .then(data => {
                 const comunidadSelect = document.getElementById('idComunidad');
