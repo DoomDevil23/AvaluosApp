@@ -26,6 +26,7 @@
                     <div class="form-element">
                         
                         <x-input-box
+                            id="fechaInscripcion"
                             name="fechaInscripcion"
                             label="Fecha de Creación"
                             type="date"
@@ -33,6 +34,7 @@
                         />
 
                         <x-input-box
+                            id="tituloFinca"
                             name="tituloFinca"
                             label="Titulo de Finca"
                             type="text"
@@ -40,28 +42,31 @@
                         />
 
                         <x-input-box
+                            id="areaTerreno"
                             name="areaTerreno"
                             label="Area del Terreno"
-                            type="number"
+                            type="text"
                             required="true"
                         />
 
                         <x-input-box
+                            id="valorTerreno"
                             name="valorTerreno"
                             label="Valor del Terrenno"
-                            type="number"
+                            type="text"
                             required="true"
                         />
 
                         <x-input-box
+                            id="valorMejora"
                             name="valorMejora"
                             label="Valor de la Mejora"
-                            type="number"
+                            type="text"
                             required="true"
                         />
 
                         <x-select
-                            id="tipoMejora"
+                            id="idTipoMejora"
                             name="idTipoMejora"
                             label="Tipo de Mejora"
                             placeholder="Seleccionar"
@@ -69,21 +74,21 @@
 
                         <x-select
                             id="provincia"
-                            name=""
+                            name="provincia"
                             label="Provincia"
                             placeholder="Seleccionar"
                         />
 
                         <x-select
                             id="distrito"
-                            name=""
+                            name="distrito"
                             label="Distrito"
                             placeholder="Seleccionar"
                         />
 
                         <x-select
                             id="idCorregimiento"
-                            name=""
+                            name="idCorregimiento"
                             label="Corregimiento"
                             placeholder="Corregimiento"
                         />
@@ -109,11 +114,10 @@
                             required=""
                         />
 
-                        <x-input-box
+                        <x-file-input
                             name="planoLote"
                             label="Plano del Lote"
-                            type="file"
-                            required=""
+                            :required=false
                         />
 
                         {{-- Buttons --}}
@@ -132,13 +136,14 @@
     <hr>
     {{-- Formulario para buscar --}}
     <h4>Buscar</h4>
-    <form method="GET" action="{{ route('terrenos.index') }}" class="mb-4">
+    <form method="GET" action="{{ route('terrenos.index') }}" class="mb-4" id="busquedaForm">
         <div class="buscar-form-element">
             
             <x-input-box-buscar
                 id="tituloFinca"
                 name="tituloFinca"
                 placeholder="Titulo de Finca"
+                title="Titulo de Finca"
                 type="text"
                 value="{{ request('tituloFinca') ?? null }}"
             />
@@ -147,6 +152,7 @@
                 id="codigoUbicacion"
                 name="codigoUbicacion"
                 placeholder="Codigo de Ubicación"
+                title="Código de Ubicación"
                 type="text"
                 value="{{ request('codigoUbicacion') ?? null }}"
             />
@@ -154,16 +160,18 @@
             <x-input-box-buscar
                 id="areaMin"
                 name="areaMin"
-                placeholder="Área mínima"
-                type="number"
+                placeholder="Área Mínima"
+                title="Área Mínima"
+                type="text"
                 value="{{ request('areaMin') ?? null }}"
             />
 
             <x-input-box-buscar
                 id="areaMax"
                 name="areaMax"
-                placeholder="Área máxima"
-                type="number"
+                placeholder="Área Máxima"
+                title="Área Máxima"
+                type="text"
                 value="{{ request('areaMax') ?? null }}"
             />
 
@@ -171,7 +179,8 @@
                 id="valorTerrenoMin"
                 name="valorTerrenoMin"
                 placeholder="Valor Terreno Mínimo"
-                type="number"
+                title="Valor Terreno Mínimo"
+                type="text"
                 value="{{ request('valorTerrenoMin') ?? null }}"
             />
 
@@ -179,7 +188,8 @@
                 id="valorTerrenoMax"
                 name="valorTerrenoMax"
                 placeholder="Valor Terreno Máximo"
-                type="number"
+                title="Valor de Terreno Máximo"
+                type="text"
                 value="{{ request('valorTerrenoMax') ?? null }}"
             />
 
@@ -187,7 +197,8 @@
                 id="valorMejoraMin"
                 name="valorMejoraMin"
                 placeholder="Valor Mejora Mínimo"
-                type="number"
+                title="Valor de Mejora Mínimo"
+                type="text"
                 value="{{ request('valorMejoraMin') ?? null }}"
             />
 
@@ -195,7 +206,8 @@
                 id="valorMejoraMax"
                 name="valorMejoraMax"
                 placeholder="Valor Mejora Máximo"
-                type="number"
+                title="Valor de Mejora Máximo"
+                type="text"
                 value="{{ request('valorMejoraMax') ?? null }}"
             />
 
@@ -203,6 +215,7 @@
                 id="fechaInicio"
                 name="fechaInicio"
                 placeholder="Fecha Inicio"
+                title="Fecha Inicio"
                 type="date"
                 value="{{ request('fechaInicio') ?? null }}"
             />
@@ -211,15 +224,17 @@
                 id="fechaFin"
                 name="fechaFin"
                 placeholder="Fecha Fin"
+                title="Fecha Fin"
                 type="date"
                 value="{{ request('fechaFin') ?? null }}"
             />
 
             <x-select-buscar
-                id="idTipoMejora"
+                id="tipoMejora"
                 name="idTipoMejora"
                 label=""
                 placeholder="Tipo Mejora"
+                title="Tipo Mejora"
                 isSelected="{{ request('idTipoMejora') }}"
             />
 
@@ -228,6 +243,7 @@
                 name="idProvincia"
                 label=""
                 placeholder="Provincia"
+                title="Provincia"
                 isSelected="{{ request('idProvincia') }}"
             />
 
@@ -236,6 +252,7 @@
                 name="idDistrito"
                 label=""
                 placeholder="Distrito"
+                title="Distrito"
                 isSelected="{{ request('idDistrito') }}"
             />
 
@@ -244,14 +261,16 @@
                 name="idCorregimiento"
                 label=""
                 placeholder="Corregimiento"
+                title="Corregimiento"
                 isSelected="{{ request('idCorregimiento') }}"
             />
 
             <x-select-buscar
-                id="idComunidad"
-                name="idComunidad"
+                id="idComunidadBuscar"
+                name="idComunidadBuscar"
                 label=""
                 placeholder="Comunidad"
+                title="Comunidad"
                 isSelected="{{ request('idComunidad') }}"
             />
         </div>
@@ -267,24 +286,24 @@
         <table class="registers-table" id="registersTable">
             <thead class="rth-table">
                 <tr>
-                    <th>F. Inscripci&oacute;n</th>
-                    <th>T. Finca</th>
-                    <th>C&oacute;d. Ubic.</th>
-                    <th>Área</th>
-                    <th>Val. Terreno</th>
-                    <th>Val. Mejora</th>
-                    <th>Val. Traspaso</th>
-                    <th>Val. M<sup>2</sup></th>
-                    <th>Val. M<sup>2</sup> Total</th>
-                    <th>Tipo Mejora</th>
-                    <th>Provincia</th>
-                    <th>Distrito</th>
-                    <th>Corregimiento</th>
-                    <th>Comunidad</th>
-                    <th>Zona</th>
-                    <th>Lote</th>
-                    <th>Plano</th>
-                    <th>Acciones</th>
+                    <th title="Fecha en que se inscribió en el registo público">F. Inscripci&oacute;n</th>
+                    <th title="Título de la finca">T. Finca</th>
+                    <th title="Código de ubicación por corregimiento">C&oacute;d. Ubic.</th>
+                    <th title="Área del terreno">Área</th>
+                    <th title="Valor del terreno">Val. Terreno</th>
+                    <th title="Valor de las mejoras/construcciones realizadas">Val. Mejora</th>
+                    <th title="Valor del traspaso = valor del terreno + valor de la mejora">Val. Traspaso</th>
+                    <th title="Valor del M^2 = valor del terreno / M^2">Val. M<sup>2</sup></th>
+                    <th title="Valor total del M^2 = (valor del terreno + valor de la mejora) / M^2">Val. M<sup>2</sup> Total</th>
+                    <th title="Tipo de la Mejora">Tipo Mejora</th>
+                    <th title="Provincia donde se encuentra el terreno">Provincia</th>
+                    <th title="Distrito donde se encuentra el terreno">Distrito</th>
+                    <th title="Corregimiento donde se encuentra el terreno">Corregimiento</th>
+                    <th title="Comunidad/barrio donde se encuentra el terreno">Comunidad</th>
+                    <th title="Ubicación gps del terreno">Zona</th>
+                    <th title="Número de lote dentro del barrio/barriada/comunidad">Lote</th>
+                    <th title="Plano de la mejora/contrucción realizada dentro del terreno">Plano</th>
+                    <th title="Elimina o actualiza el registro. Acceso restringido">Acciones</th>
                 </tr>
             </thead>
             <tbody class="rtb-table">
@@ -292,17 +311,18 @@
                     <tr>
                         <td>{{ date_format($terreno->fechaInscripcion, 'd-m-Y') }}</td>
                         <td>{{ $terreno->tituloFinca }}</td>
-                        <td>
-                            {{ $terreno->comunidad->corregimiento->codigoUbicacion }}
+                        <td class="text-center align-middle border p-4">
+                            <div class="mx-1 my-1">{{ $terreno->comunidad->corregimiento->codigoUbicacion }}</div>
                             @if(in_array(auth()->user()->idRole, [2, 3]))
-                                </br>
-                                <button type="button"
-                                    class="btn btn-primary btn-sm editar-btn editar-codigo-ubicacion"
-                                    data-open='addCodigoUbicacionModal'
-                                    data-id = "{{ $terreno->comunidad->corregimiento->id }}"
-                                    data-codigo-ubicacion = "{{ $terreno->comunidad->corregimiento->codigoUbicacion }}">
-                                    Actualizar
-                                </button>
+                                <div class="mx-1 my-1">
+                                    <button type="button"
+                                        class="btn btn-primary btn-sm editar-btn editar-codigo-ubicacion"
+                                        data-open='addCodigoUbicacionModal'
+                                        data-id = "{{ $terreno->comunidad->corregimiento->id }}"
+                                        data-codigo-ubicacion = "{{ $terreno->comunidad->corregimiento->codigoUbicacion }}">
+                                        Actualizar
+                                    </button>
+                                </div>
                             @endif
                         </td>
                         <td>{{ $terreno->areaTerreno }} M<sup>2</sup></td>
