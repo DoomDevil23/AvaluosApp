@@ -21,7 +21,7 @@
         {{-- Formulario --}}
         <div class="container mx-auto p-4 max-w-screen-80">
             
-            
+            <h2>Crear Link de Invitación</h2>
             {{-- Formulario --}}
             <div class="grid grid-cols-1 gap-4">
                 <form id="invitacionForm" action="{{ route('invitaciones.store') }}" method="POST" enctype="multipart/form-data" class="mb-5">
@@ -58,7 +58,8 @@
                 </form>
             </div>
             @if(session('invitation_link'))
-                <p>Invitación: <a href="{{ session('invitation_link') }}" target="_blank">{{ session('invitation_link') }}</a></p>
+                <p id="textToCopy" class="text-white mb-5">{{ session('invitation_link') }}</p>
+                <button id="copyButton" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Copiar</button>
             @endif
         </div>
     
@@ -71,6 +72,7 @@
                     id="nameBuscar"
                     name="name"
                     placeholder="Nombre del Usuario"
+                    title="Nombre del Usuario"
                     type="text"
                     value="{{ request('name') ?? null }}"
                 />
@@ -79,6 +81,7 @@
                     id="emailBuscar"
                     name="email"
                     placeholder="Email del Usuario"
+                    title="Email del Usuario"
                     type="text"
                     value="{{ request('email') ?? null }}"
                 />
@@ -88,6 +91,7 @@
                     name="idRole"
                     label=""
                     placeholder="Rol"
+                    title="Rol del Usuario"
                     idSelected="{{ request('idRole') }}"
                     :options="$roles"
                 />
@@ -118,11 +122,11 @@
                         <tr>
                             <td>{{ $user->name }}</td>
                             <td>{{ $user->email ?? 'N/A' }}</td>
-                            <td>
+                            <td class="content-center flex justify-center items-center">
                                 <form action="{{ route('users.updateRole', $user->id) }}" method="POST">
                                     @csrf
                                     @method('PATCH')
-                                    <select name="idRole" class="rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-black">
+                                    <select name="idRole" class="rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-black h6 text-xs my-5">
                                         @foreach($roles as $role)
                                             <option value="{{ $role->id }}" {{ $role->id == $user->idRole ? 'selected' : '' }}>
                                                 {{ $role->name }}
@@ -136,7 +140,7 @@
                                 <form action="{{ route('users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="btn-danger bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 btn-sm">Eliminar</button>
+                                    <button class="btn-danger bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 btn-sm mb-5">Eliminar</button>
                                 </form>
                             </td>
                         </tr>
@@ -150,7 +154,6 @@
     </div>
     @vite('resources/js/app.js')
     @vite('resources/js/selects.js')
-    @vite('resources/js/comunidades.js')
     @vite('resources/js/table.js')
 </x-app-layout>
 {{--@endsection--}}
