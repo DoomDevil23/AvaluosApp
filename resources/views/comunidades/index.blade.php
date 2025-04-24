@@ -89,6 +89,7 @@
                     id="nameBuscar"
                     name="name"
                     placeholder="Nombre de la Comunidad"
+                    title="Nombre de la Comunidad"
                     type="text"
                     value="{{ request('name') ?? null }}"
                 />
@@ -98,6 +99,7 @@
                     name="idProvincia"
                     label=""
                     placeholder="Provincia"
+                    title="Provincia"
                     idSelected="{{ request('idProvincia') }}"
                 />
     
@@ -106,6 +108,7 @@
                     name="idDistrito"
                     label=""
                     placeholder="Distrito"
+                    title="Distrito"
                     isSelected="{{ request('idDistrito') }}"
                 />
     
@@ -114,6 +117,7 @@
                     name="idCorregimiento"
                     label=""
                     placeholder="Corregimiento"
+                    title="Corregimiento"
                     isSelected="idCorregimiento"
                 />
             </div>
@@ -131,11 +135,11 @@
             <table class="registers-table" id="registersTable">
                 <thead class="rth-table">
                     <tr>
-                        <th>Nombre</th>
-                        <th>Provincia</th>
-                        <th>Distrito</th>
-                        <th>Corregimiento</th>
-                        <th>Acciones</th>
+                        <th title="Nombre de la comunidad/barrio/barriada">Nombre</th>
+                        <th title="Provincia donde se encuentra la comunidad/barrio/barriada">Provincia</th>
+                        <th title="Distrito donde se encuentra la comunidad/barrio/barriada">Distrito</th>
+                        <th title="Corregimiento donde se encuentra la comunidad/barrio/barriada">Corregimiento</th>
+                        <th title="Actualizar o eliminar la comunidad/barrio/barriada. Restringido">Acciones</th>
                     </tr>
                 </thead>
                 <tbody class="rtb-table">
