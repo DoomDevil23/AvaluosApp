@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
-    fetch('/provincias')
+    if(document.getElementById('provincia')){
+        fetch('/provincias')
         .then(res => res.json())
         .then(data => {
             let provinciaSelect = document.getElementById('provincia');
@@ -37,38 +38,41 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             });
         }
-});
-
-document.getElementById('provincia').addEventListener('change', function () {
-    let provinciaId = this.value;  // Get selected provincia ID
-    if (provinciaId) {
-        // Fetch distritos for the selected provincia
-        fetch(`/distritos/${provinciaId}`)
-            .then(res => res.json())
-            .then(data => {
-                let distritoSelect = document.getElementById('distrito');
-                // Clear previous options and add the default one
-                distritoSelect.innerHTML = '<option value="">Seleccionar</option>';
-                data.forEach(d => {
-                    // Append each distrito as an option
-                    distritoSelect.innerHTML += `<option value="${d.id}">${d.name}</option>`;
-                });
-
-                // Clear the corregimiento and comunidad selects
-                if(document.getElementById('corregimniento'))
-                    document.getElementById('corregimiento').innerHTML = '<option value="">Seleccionar</option>';
-                if(document.getElementById('comunidad'))
-                    document.getElementById('comunidad').innerHTML = '<option value="">Seleccionar</option>';
-            })
-            .catch(error => console.error('Error fetching distritos:', error));
-    } else {
-        // If no provincia is selected, clear the distrito select options
-        document.getElementById('distrito').innerHTML = '<option value="">Seleccionar</option>';
-        document.getElementById('corregimiento').innerHTML = '<option value="">Seleccionar</option>';
-        if(document.getElementById('comunidad'))
-            document.getElementById('comunidad').innerHTML = '<option value="">Seleccionar</option>';
     }
 });
+
+if(document.getElementById('provincia')){
+    document.getElementById('provincia').addEventListener('change', function () {
+        let provinciaId = this.value;  // Get selected provincia ID
+        if (provinciaId) {
+            // Fetch distritos for the selected provincia
+            fetch(`/distritos/${provinciaId}`)
+                .then(res => res.json())
+                .then(data => {
+                    let distritoSelect = document.getElementById('distrito');
+                    // Clear previous options and add the default one
+                    distritoSelect.innerHTML = '<option value="">Seleccionar</option>';
+                    data.forEach(d => {
+                        // Append each distrito as an option
+                        distritoSelect.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+                    });
+
+                    // Clear the corregimiento and comunidad selects
+                    //if(document.getElementById('idCorregimniento'))
+                        document.getElementById('idCorregimiento').innerHTML = '<option value="">Seleccionar</option>';
+                    if(document.getElementById('idComunidad'))
+                        document.getElementById('idComunidad').innerHTML = '<option value="">Seleccionar</option>';
+                })
+                .catch(error => console.error('Error fetching distritos:', error));
+        } else {
+            // If no provincia is selected, clear the distrito select options
+            document.getElementById('distrito').innerHTML = '<option value="">Seleccionar</option>';
+            document.getElementById('corregimiento').innerHTML = '<option value="">Seleccionar</option>';
+            if(document.getElementById('comunidad'))
+                document.getElementById('comunidad').innerHTML = '<option value="">Seleccionar</option>';
+        }
+    });
+}
 
 if(document.getElementById('distrito')){
     document.getElementById('distrito').addEventListener('change', function () {
@@ -100,7 +104,7 @@ if(document.getElementById('distrito')){
     });
 }
 
-if(document.getElementById('idCorregimiento') && document.getElementById('comunidad')){
+if(document.getElementById('idCorregimiento') && document.getElementById('idComunidad')){
     document.getElementById('idCorregimiento').addEventListener('change', function () {
         let corregimientoId = this.value;  // Get selected corregimiento ID
         if (corregimientoId) {
@@ -113,7 +117,7 @@ if(document.getElementById('idCorregimiento') && document.getElementById('comuni
             })
                 .then(res => res.json())
                 .then(data => {
-                    let comunidadSelect = document.getElementById('comunidad');
+                    let comunidadSelect = document.getElementById('idComunidad');
                     // Clear previous options and add the default one
                     comunidadSelect.innerHTML = '<option value="">Seleccionar</option>';
                     data.forEach(com => {
@@ -130,60 +134,48 @@ if(document.getElementById('idCorregimiento') && document.getElementById('comuni
     });
 }
 
-if(document.getElementById('comunidad')){
-    document.getElementById('comunidad').addEventListener('change', function () {
-        if (this.value === '__add_new__') {
-            let corregimientoId = document.getElementById('idCorregimiento').value;
-            if (corregimientoId) {
-                // Open modal
-                document.getElementById('corregimiento_id_modal').value = corregimientoId;
-                let modal = new bootstrap.Modal(document.getElementById('addComunidadModal'));
-                modal.show();
-            } else {
-                alert("Seleccione un corregimiento primero.");
-            }
-            this.value = ''; // Reset to default
+if(document.getElementById('idProvincia')){
+    document.getElementById('idProvincia').addEventListener('change', function () {
+        const provinciaId = this.value;
+        document.getElementById('idDistrito').innerHTML = '<option value="">Seleccionar</option>';
+        document.getElementById('idCorregimientoBuscar').innerHTML = '<option value="">Seleccionar</option>';
+        if(document.getElementById('idComunidadBuscar'))
+            document.getElementById('idComunidadBuscar').innerHTML = '<option value="">Seleccionar</option>';
+        if(provinciaId){
+            fetch(`/distritos/${provinciaId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const distritoSelect = document.getElementById('idDistrito');
+                    distritoSelect.innerHTML = '<option value="">-- Distrito --</option>';
+                    data.forEach(distrito => {
+                        distritoSelect.innerHTML += `<option value="${distrito.id}">${distrito.name}</option>`;
+                    });
+                });
         }
     });
 }
 
-document.getElementById('idProvincia').addEventListener('change', function () {
-    const provinciaId = this.value;
-    document.getElementById('idDistrito').innerHTML = '<option value="">Seleccionar</option>';
-    document.getElementById('idCorregimiento').innerHTML = '<option value="">Seleccionar</option>';
-    document.getElementById('idComunidad').innerHTML = '<option value="">Seleccionar</option>';
-    if(provinciaId){
-        fetch(`/distritos/${provinciaId}`)
-            .then(response => response.json())
-            .then(data => {
-                const distritoSelect = document.getElementById('idDistrito');
-                distritoSelect.innerHTML = '<option value="">-- Distrito --</option>';
-                data.forEach(distrito => {
-                    distritoSelect.innerHTML += `<option value="${distrito.id}">${distrito.name}</option>`;
+if(document.getElementById('idDistrito')){
+    document.getElementById('idDistrito').addEventListener('change', function(){
+        const distritoId = this.value;
+        document.getElementById('idCorregimiento').innerHTML = '<option value="">Seleccionar</option>';
+        if(document.getElementById('idComunidad'))
+            document.getElementById('idComunidad').innerHTML = '<option value="">Seleccionar</option>';
+        if(distritoId){
+            fetch(`/corregimientos/${distritoId}`)
+                .then(response => response.json())
+                .then(data =>{
+                    const corregimientoSelect = document.getElementById('idCorregimientoBuscar');
+                    corregimientoSelect.innerHTML = '<option value="">-- Corregimiento --</option>';
+                    data.forEach(corregimiento =>{
+                        corregimientoSelect.innerHTML += `<option value="${corregimiento.id}">${corregimiento.name}</option>`;
+                    });
                 });
-            });
-    }
-});
+        }
+    });
+}
 
-document.getElementById('idDistrito').addEventListener('change', function(){
-    const distritoId = this.value;
-    document.getElementById('idCorregimiento').innerHTML = '<option value="">Seleccionar</option>';
-    if(document.getElementById('idComunidad'))
-        document.getElementById('idComunidad').innerHTML = '<option value="">Seleccionar</option>';
-    if(distritoId){
-        fetch(`/corregimientos/${distritoId}`)
-            .then(response => response.json())
-            .then(data =>{
-                const corregimientoSelect = document.getElementById('idCorregimientoBuscar');
-                corregimientoSelect.innerHTML = '<option value="">-- Corregimiento --</option>';
-                data.forEach(corregimiento =>{
-                    corregimientoSelect.innerHTML += `<option value="${corregimiento.id}">${corregimiento.name}</option>`;
-                });
-            });
-    }
-});
-
-if(document.getElementById('idCorregimientoBuscar')){
+if(document.getElementById('idCorregimientoBuscar') && document.getElementById('idComunidadBuscar')){
     document.getElementById('idCorregimientoBuscar').addEventListener('change', function () {
         const corregimientoId = this.value;
         fetch(`/comunidades/${corregimientoId}`, {
@@ -194,7 +186,7 @@ if(document.getElementById('idCorregimientoBuscar')){
         })
             .then(response => response.json())
             .then(data => {
-                const comunidadSelect = document.getElementById('idComunidad');
+                const comunidadSelect = document.getElementById('idComunidadBuscar');
                 comunidadSelect.innerHTML = '<option value="">-- Comunidad --</option>';
                 data.forEach(comunidad => {
                     comunidadSelect.innerHTML += `<option value="${comunidad.id}">${comunidad.name}</option>`;
