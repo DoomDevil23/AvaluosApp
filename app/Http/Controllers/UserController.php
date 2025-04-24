@@ -49,9 +49,24 @@ class UserController extends Controller
         return redirect()->intended('/dashboard'); // o a donde prefieras
     }
 
-    public function index(){
+    public function index(Request $request){
         // Retrieve users with their roles (using Eager Loading to optimize queries)
-        $users = User::with('roles')->paginate(10); // Adjust pagination as needed
+        $query = User::with(['roles']);
+
+        if($request->filled('name')){
+            $query->where('name', 'like', '%'.$request->name.'%');
+        }
+
+        if($request->filled('email')){
+            $query->where('email', 'like', '%'.$request->email.'%');
+        }
+
+        if($request->filled('idRole')){
+            $query->where('idRole','=', $request->idRole);
+        }
+
+        $users = $query->orderBy('name', 'asc')
+        ->paginate(10);
         //$roles = Role::all(); // Retrieve all roles
         $roles = Role::orderBy('name', 'asc')->get();
 
