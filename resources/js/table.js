@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     // Check if there are filters in the URL (query parameters)
-    if (window.location.search.includes('idProvincia') || window.location.search.includes('page')) {
+    if (window.location.search.includes('idProvincia') || window.location.search.includes('page') || window.location.search.includes('email')) {
         const table = document.getElementById('registersTable');
         if (table) {
             table.scrollIntoView({ behavior: 'smooth' });
@@ -21,3 +21,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 10000); // 10-second timeout
     });
 });
+
+if(document.getElementById('copyButton')){
+    document.getElementById('copyButton').addEventListener('click', function () {
+        // Get the text content from the <p> element
+        const textToCopy = document.getElementById('textToCopy').textContent;
+
+        // Use the Clipboard API to copy the text
+        navigator.clipboard.writeText(textToCopy).then(function () {
+            // Success message
+            alert('Text copied to clipboard!');
+        }).catch(function (error) {
+            // Error handling
+            alert('Failed to copy text: ' + error);
+        });
+    });
+}
