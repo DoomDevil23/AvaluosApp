@@ -24,7 +24,7 @@
                         {{ __('Avaluos') }}
                     </x-nav-link>
 
-                    @if(in_array(auth()->user()->idRole, [2, 3]))
+                    @if(in_array(auth()->user()->idRole, [3]))
                     <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.index')">
                         {{ __('Usuarios') }}
                     </x-nav-link>
