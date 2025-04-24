@@ -67,7 +67,7 @@ document.querySelectorAll('.editar-terreno').forEach(button => {
                     })
                     .then(res => res.json())
                     .then(comunidades => {
-                        const comunidadSelect = document.getElementById('comunidad');
+                        const comunidadSelect = document.getElementById('idComunidad');
                         comunidadSelect.innerHTML = '<option value="">Seleccionar</option>';
                         comunidades.forEach(c => {
                             comunidadSelect.innerHTML += `<option value="${c.id}" ${c.id == comunidad_id ? 'selected' : ''}>${c.name}</option>`;
@@ -100,8 +100,8 @@ document.getElementById('cancelarEdicionTerreno').addEventListener('click', func
     this.style.display = 'none';
     document.querySelector('#terrenoForm button[type="submit"]').textContent = 'Guardar Terreno';
     document.getElementById('distrito').innerHTML = '<option value="">Seleccionar</option>';
-    document.getElementById('corregimiento').innerHTML = '<option value="">Seleccionar</option>';
-    document.getElementById('comunidad').innerHTML = '<option value="">Seleccionar</option>';
+    document.getElementById('idCorregimiento').innerHTML = '<option value="">Seleccionar</option>';
+    document.getElementById('idComunidad').innerHTML = '<option value="">Seleccionar</option>';
 });
 
 //ADD NEW COMUNIDAD
@@ -128,7 +128,7 @@ document.getElementById('addComunidadForm').addEventListener('submit', function 
     }))
     .then(data => {
         if (data && data.id) {
-            let comunidadSelect = document.getElementById('comunidad');
+            let comunidadSelect = document.getElementById('idComunidad');
             comunidadSelect.innerHTML += `<option value="${data.id}" selected>${data.name}</option>`;
 
             // Manually close modal using updated logic
@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const selectedProvincia = params.get('idProvincia');
     const selectedDistrito = params.get('idDistrito');
     const selectedCorregimiento = params.get('idCorregimiento');
-    const selectedComunidad = params.get('idComunidad');
+    const selectedComunidad = params.get('idComunidadBuscar');
 
     // Populate the Provincia select
     fetch('/provincias')
@@ -273,7 +273,7 @@ document.addEventListener('DOMContentLoaded', function () {
         })
             .then(res => res.json())
             .then(comunidades =>{
-                const comunidadSelect = document.getElementById('idComunidad');
+                const comunidadSelect = document.getElementById('idComunidadBuscar');
                 comunidadSelect.innerHTML = '<option value="">-- Comunidad --</option>';
 
                 comunidades.forEach(comunidad => {
@@ -342,7 +342,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Handle opening "Nueva Comunidad" modal when user selects "__add_new__"
-    const comunidadSelect = document.getElementById('comunidad');
+    const comunidadSelect = document.getElementById('idComunidad');
     if (comunidadSelect) {
         comunidadSelect.addEventListener('change', function () {
             if (this.value === '__add_new__') {
@@ -356,5 +356,103 @@ document.addEventListener('DOMContentLoaded', () => {
                 openModal('addComunidadModal');
             }
         });
+    }
+});
+
+document.querySelector('[name="areaTerreno"]').addEventListener('input', function (e) {
+    numberValidate(e);
+});
+
+document.querySelector('[name="valorTerreno"]').addEventListener('input', function (e) {
+    numberValidate(e);
+});
+
+document.querySelector('[name="valorMejora"]').addEventListener('input', function (e) {
+    numberValidate(e);
+});
+
+document.getElementById('areaMin').addEventListener('input', function (e){
+    numberValidate(e);
+});
+
+document.getElementById('areaMax').addEventListener('input', function (e){
+    numberValidate(e);
+});
+
+document.getElementById('valorTerrenoMin').addEventListener('input', function (e){
+    numberValidate(e);
+});
+
+document.getElementById('valorTerrenoMax').addEventListener('input', function (e){
+    numberValidate(e);
+});
+
+document.getElementById('valorMejoraMin').addEventListener('input', function (e){
+    numberValidate(e);
+});
+
+document.getElementById('valorMejoraMax').addEventListener('input', function (e){
+    numberValidate(e);
+});
+
+function numberValidate(e){
+    let value = e.target.value;
+
+    // Remove all invalid characters: keep only numbers and a single period for decimals
+    value = value.replace(/[^0-9.]/g, '');
+
+    // If the first character is a ".", prepend "0"
+    if (value.startsWith('.')) {
+        value = '0' + value;
+    }
+
+    // Prevent multiple decimal points
+    const parts = value.split('.');
+    if (parts.length > 2) {
+        value = parts[0] + '.' + parts[1]; // Retain only the first two parts
+    }
+
+    // Ensure decimals don't exceed 2 places
+    if (parts[1]?.length > 2) {
+        value = parts[0] + '.' + parts[1].substring(0, 2);
+    }
+
+    // Disallow negative values entirely
+    value = value.replace(/^-/, '');
+
+    // Update the input value after sanitization
+    e.target.value = value;
+}
+
+document.getElementById('busquedaForm').addEventListener('submit', function(e){
+    let mensaje = "";
+    
+    if(document.getElementById('areaMin').value != "" && document.getElementById('areaMax').value != ""){
+        if(Number(document.getElementById('areaMin').value) > Number(document.getElementById('areaMax').value)){
+            mensaje += "El área de búsqueda mínima no puede ser mayor al área máxima.\n";
+        }
+    }
+
+    if(document.getElementById('valorTerrenoMin').value != "" && document.getElementById('valorTerrenoMax').value != ""){
+        if(Number(document.getElementById('valorTerrenoMin').value) > Number(document.getElementById('valorTerrenoMax').value)){
+            mensaje += "El valor mínimo del terreno en búsqueda no puede ser mayor al valor máxima del terreno.\n";
+        }
+    }
+
+    if(document.getElementById('valorMejoraMin').value != "" && document.getElementById('valorMejoraMax').value != ""){
+        if(Number(document.getElementById('valorMejoraMin').value) > Number(document.getElementById('valorMejoraMax').value)){
+            mensaje += "El valor mínimo de la mejora en búsqueda no puede ser mayor al valor máxima de la mejora.\n";
+        }
+    }
+
+    if(document.getElementById('fechaFin').value != "" && document.getElementById('fechaInicio').value != ""){
+        if(document.getElementById('fechaFin').value < document.getElementById('fechaInicio').value){
+            mensaje += "La fecha inicial no puede ser mayor a la fecha final.\n";
+        }
+    }
+
+    if(mensaje){
+        event.preventDefault();
+        alert(mensaje);
     }
 });
