@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .container{
-    @apply mx-auto max-w-screen-lg lg:max-w-screen-xl xl:max-w-[90%] p-4;
+    @apply mx-auto max-w-screen-lg lg:max-w-screen-xl xl:max-w-[90%];
 }
 
 .form-element{
@@ -27,7 +27,7 @@
 }
 
 .table-wrapper{
-    @apply overflow-x-auto;
+    @apply overflow-x-auto mb-4;
 }
 
 .registers-table{
