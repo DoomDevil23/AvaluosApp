@@ -2,7 +2,7 @@
     {{-- Edit Button --}}
     @if ($editData)
         <button type="button" 
-                class="btn-primary btn-sm editar-btn {{ $class }}" 
+                class="btn-primary btn-sm editar-btn my-1 {{ $class }}" 
                 @foreach ($editData as $key => $value)
                     data-{{ $key }}="{{ $value }}"
                 @endforeach>
