@@ -14,7 +14,7 @@ class InvitacionSeeder extends Seeder
     public function run(): void
     {
         DB::table('invitaciones')->insert([
-            ['token' => 'helloda', 'idRole' => 3, 'is_used' => false, 'expired_at' => '2025-04-23'],
+            ['token' => 'helloda', 'idRole' => 3, 'is_used' => false, 'expired_at' => '2026-04-23'],
         ]);
     }
 }
