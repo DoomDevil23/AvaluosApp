@@ -82,8 +82,9 @@
     
         <hr>
         {{-- Formulario para buscar --}}
-        <h4>Buscar</h4>
-        <form method="GET" action="{{ route('comunidades.index') }}" class="mb-4">
+        <x-search-drop-down />
+
+        <form method="GET" action="{{ route('comunidades.index') }}" class="mb-4 hidden" id="busquedaForm">
             <div class="buscar-form-element">
                 <x-input-box-buscar
                     id="nameBuscar"
@@ -171,5 +172,6 @@
     @vite('resources/js/selects.js')
     @vite('resources/js/comunidades.js')
     @vite('resources/js/table.js')
+    @vite('resources/js/searchDropDown.js')
 </x-app-layout>
 {{--@endsection--}}
