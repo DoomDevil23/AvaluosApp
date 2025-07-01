@@ -16,12 +16,13 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                     <!-- New Navigation Links -->
-                    <x-nav-link :href="route('comunidades.index')" :active="request()->routeIs('comunidades.index')">
-                        {{ __('Comunidades') }}
-                    </x-nav-link>
 
                     <x-nav-link :href="route('terrenos.index')" :active="request()->routeIs('terrenos.index')">
                         {{ __('Avaluos') }}
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('comunidades.index')" :active="request()->routeIs('comunidades.index')">
+                        {{ __('Comunidades') }}
                     </x-nav-link>
 
                     @if(in_array(auth()->user()->idRole, [3]))
@@ -92,12 +93,12 @@
             </x-responsive-nav-link>
         
             <!-- New Navigation Links -->
-            <x-responsive-nav-link :href="route('comunidades.index')" :active="request()->routeIs('comunidades.index')">
-                {{ __('Comunidades') }}
-            </x-responsive-nav-link>
-        
             <x-responsive-nav-link :href="route('terrenos.index')" :active="request()->routeIs('terrenos.index')">
                 {{ __('Avaluos') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="route('comunidades.index')" :active="request()->routeIs('comunidades.index')">
+                {{ __('Comunidades') }}
             </x-responsive-nav-link>
 
             @if(in_array(auth()->user()->idRole, [2, 3]))
