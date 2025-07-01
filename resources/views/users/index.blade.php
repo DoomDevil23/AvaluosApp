@@ -21,52 +21,10 @@
         {{-- Formulario --}}
         <div class="container mx-auto p-4 max-w-screen-80">
             
-            <h2>Crear Link de Invitación</h2>
-            {{-- Formulario --}}
-            <div class="grid grid-cols-1 gap-4">
-                <form id="invitacionForm" action="{{ route('invitaciones.store') }}" method="POST" enctype="multipart/form-data" class="mb-5">
-                    @csrf
-                    
-                    {{-- Adjusted Grid Layout --}}
-                    <div class="form-element"> 
-
-                        <x-select 
-                            id="idRole" 
-                            name="idRole" 
-                            label="Role"  
-                            placeholder="Seleccionar"
-                            :options="$roles"
-                        />
-
-                        <x-input-box
-                            name="dias"
-                            label="Días de Validéz"
-                            type="number"
-                            required="true"
-                            value=1
-                        />
-
-                    {{-- Buttons --}}
-                    <div class="btn-wrapper">
-                        <!--<button type="button" class="hidden btn-secondary text-black bg-gray-200 px-4 py-2 rounded-md hover:bg-gray-300" id="cancelarEdicionComunidad">Cancelar</button>-->
-                        <x-btn-cancelar
-                            id="cancelarEdicionComunidad"
-                        />
-                        <!--<button type="submit" class="btn-primary">Guardar</button>-->
-                        <x-btn-guardar-actualizar />
-                    </div>
-                </form>
-            </div>
-            @if(session('invitation_link'))
-                <p id="textToCopy" class="text-white mb-5">{{ session('invitation_link') }}</p>
-                <button id="copyButton" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Copiar</button>
-            @endif
-        </div>
-    
-        <hr>
         {{-- Formulario para buscar --}}
-        <h4>Buscar</h4>
-        <form method="GET" action="{{ route('users.index') }}" class="mb-4">
+        <x-search-drop-down />
+
+        <form method="GET" action="{{ route('users.index') }}" class="mb-4 hidden" id="busquedaForm">
             <div class="buscar-form-element">
                 <x-input-box-buscar
                     id="nameBuscar"
@@ -155,5 +113,6 @@
     @vite('resources/js/app.js')
     @vite('resources/js/selects.js')
     @vite('resources/js/table.js')
+    @vite('resources/js/searchDropDown.js')
 </x-app-layout>
 {{--@endsection--}}
