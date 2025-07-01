@@ -135,8 +135,8 @@
 
     <hr>
     {{-- Formulario para buscar --}}
-    <h4>Buscar</h4>
-    <form method="GET" action="{{ route('terrenos.index') }}" class="mb-4" id="busquedaForm">
+    <x-search-drop-down />
+    <form method="GET" action="{{ route('terrenos.index') }}" class="mb-4 hidden" id="busquedaForm">
         <div class="buscar-form-element">
             
             <x-input-box-buscar
@@ -426,5 +426,6 @@
 @vite('resources/js/app.js')
 @vite('resources/js/terrenos.js')
 @vite('resources/js/table.js')
+@vite('resources/js/searchDropDown')
 </x-app-layout>
 {{--@endsection--}}
